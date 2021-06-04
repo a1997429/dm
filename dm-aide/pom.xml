@@ -27,7 +27,7 @@
             <artifactId>jacob</artifactId>
             <version>1.20</version>
             <scope>system</scope>
-            <systemPath>${basedir}/src/main/resources/jacob-1.20/jacob.jar</systemPath>
+            <systemPath>${basedir}/src/main/resources/jacob/jacob.jar</systemPath>
         </dependency>
 
         <!-- jawin -->
