@@ -15,6 +15,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
@@ -42,7 +43,10 @@ public class JawinTest {
 
         try {
 
-            FuncPtr funPoint = new FuncPtr("D:\\Projects\\dm\\dm-aide\\src\\main\\resources\\lib\\MyDllExample.dll", "ReturnParam");
+            String path = ClassLoader.class.getResource("/lib/MyDllExample.dll").getPath();
+            File file = new File(path);
+
+            FuncPtr funPoint = new FuncPtr(file.getPath(), "ReturnParam");
 
             //创建数据流
             NakedByteStream nbs = new NakedByteStream();
@@ -74,8 +78,11 @@ public class JawinTest {
     public void MyDllExampleAdd() {
 
         try {
+            String path = ClassLoader.class.getResource("/lib/MyDllExample.dll").getPath();
+            File file = new File(path);
 
-            FuncPtr funPoint = new FuncPtr("D:\\Projects\\dm\\dm-aide\\src\\main\\resources\\lib\\MyDllExample.dll", "Add");
+            // FuncPtr funPoint = new FuncPtr(file.getPath(), "Add");
+            FuncPtr funPoint = new FuncPtr(file.getPath(), "Max");
 
             // 创建数据流
             NakedByteStream nbs = new NakedByteStream();

@@ -48,6 +48,15 @@
             <systemPath>${basedir}/src/main/resources/jawin-2.0-alpha1/jawin-stubs.jar</systemPath>
         </dependency>
 
+        <!-- javaelf.cn -->
+        <dependency>
+            <groupId>com.qiyou</groupId>
+            <artifactId>javaelf</artifactId>
+            <version>1.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/src/main/resources/javaelf/JavaElf-1.0-SNAPSHOT-jar-with-dependencies.jar</systemPath>
+        </dependency>
+
     </dependencies>
 
     <repositories>
