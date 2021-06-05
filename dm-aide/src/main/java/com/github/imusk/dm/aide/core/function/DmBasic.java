@@ -82,8 +82,8 @@ public class DmBasic {
      *
      * @throws COMException
      */
-    public Long GetLastError() throws COMException {
-        return Long.parseLong(dm.invoke("GetLastError").toString());
+    public Integer GetLastError() throws COMException {
+        return Integer.parseInt(dm.invoke("GetLastError").toString());
     }
 
 
@@ -215,12 +215,12 @@ public class DmBasic {
      *             "screen" 这个是默认的模式，表示使用显示器或者后台窗口
      *             "pic:file" 指定输入模式为指定的图片,如果使用了这个模式，则所有和图色相关的函数 均视为对此图片进行处理，比如文字识别查找图片 颜色 等等一切图色函数. 需要注意的是，设定以后，此图片就已经加入了缓冲，如果更改了源图片内容，那么需要 释放此缓冲，重新设置.
      *
-     * @return Long 0: 失败 1: 成功
+     * @return Integer 0: 失败 1: 成功
      *
      * @throws COMException
      */
-    public Long SetDisplayInput(String mode) throws COMException {
-        return Long.parseLong(dm.invokeN("SetDisplayInput", new Object[]{mode}).toString());
+    public Integer SetDisplayInput(String mode) throws COMException {
+        return Integer.parseInt(dm.invokeN("SetDisplayInput", new Object[]{mode}).toString());
     }
 
 
@@ -229,12 +229,12 @@ public class DmBasic {
      *
      * @param delay 单位毫秒
      *
-     * @return Long 0: 失败 1: 成功
+     * @return Integer 0: 失败 1: 成功
      *
      * @throws COMException
      */
-    public Long SetEnumWindowDelay(int delay) throws COMException {
-        return Long.parseLong(dm.invokeN("SetEnumWindowDelay", new Object[]{delay}).toString());
+    public Integer SetEnumWindowDelay(Integer delay) throws COMException {
+        return Integer.parseInt(dm.invokeN("SetEnumWindowDelay", new Object[]{delay}).toString());
     }
 
     /**
@@ -242,12 +242,12 @@ public class DmBasic {
      *
      * @param path 路径,可以是相对路径,也可以是绝对路径
      *
-     * @return Long 0: 失败 1: 成功
+     * @return Integer 0: 失败 1: 成功
      *
      * @throws COMException
      */
-    public Long SetPath(String path) throws COMException {
-        return Long.parseLong(dm.invokeN("SetPath", new Object[]{path}).toString());
+    public Integer SetPath(String path) throws COMException {
+        return Integer.parseInt(dm.invokeN("SetPath", new Object[]{path}).toString());
     }
 
 
@@ -256,12 +256,12 @@ public class DmBasic {
      *
      * @param show 0表示不打开,1表示打开
      *
-     * @return Long 0: 失败 1: 成功
+     * @return Integer 0: 失败 1: 成功
      *
      * @throws COMException
      */
-    public Long SetShowErrorMsg(int show) throws COMException {
-        return Long.parseLong(dm.invokeN("SetShowErrorMsg", new Object[]{show}).toString());
+    public Integer SetShowErrorMsg(Long show) throws COMException {
+        return Integer.parseInt(dm.invokeN("SetShowErrorMsg", new Object[]{show}).toString());
     }
 
 
