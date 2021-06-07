@@ -280,4 +280,39 @@ public class DmTest {
     }
 
 
+    @Test
+    public void dmPictureColor() throws Exception {
+
+        // 大漠插件
+        String dmPath = ClassLoader.class.getResource("/lib/dm.dll").getPath();
+        File dmFile = new File(dmPath);
+
+        // 大漠免注册Dll
+        String dmRegPath = ClassLoader.class.getResource("/lib/DmReg.dll").getPath();
+        File dmRegFile = new File(dmRegPath);
+
+        // DmReg.setLibPath(null);
+        DmReg.register(dmRegFile.getPath(), dmFile.getPath());
+        DmReg.close();
+
+        DmSoft dm = DmSoft.getInstance();
+
+        DmWindow dmWindow = new DmWindow(dm);
+
+        Long notepadHandle = dmWindow.FindWindow("", "记事本");
+
+        logger.info("记事本窗口句柄：{}", notepadHandle);
+
+        DmBasic dmBasic = new DmBasic(dm);
+
+        DmPictureColor dmPictureColor = new DmPictureColor(dm);
+
+        dmBasic.SetPath("D:\\tmp");
+
+        logger.info("Capture = {}", dmPictureColor.Capture(0, 0, 1000, 1000, "DM-Capture.bmp"));
+        logger.info("CaptureGif = {}", dmPictureColor.CaptureGif(0,0,1000,1000,"DM-Capture.gif",100,3000));
+
+    }
+
+
 }
