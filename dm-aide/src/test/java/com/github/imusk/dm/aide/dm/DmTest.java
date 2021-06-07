@@ -2,8 +2,7 @@ package com.github.imusk.dm.aide.dm;
 
 import com.github.imusk.dm.aide.core.DmReg;
 import com.github.imusk.dm.aide.core.DmSoft;
-import com.github.imusk.dm.aide.core.function.DmBasic;
-import com.github.imusk.dm.aide.core.function.DmWindow;
+import com.github.imusk.dm.aide.core.function.*;
 import com.github.imusk.dm.aide.utils.ResourcesUtil;
 import org.jawin.DispatchPtr;
 import org.jawin.FuncPtr;
@@ -11,6 +10,8 @@ import org.jawin.ReturnFlags;
 import org.jawin.Variant;
 import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
@@ -22,6 +23,8 @@ import java.io.File;
  * @description: 大漠插件
  */
 public class DmTest {
+
+    private final static Logger logger = LoggerFactory.getLogger(DmTest.class);
 
     @Before
     public void loadDll() {
@@ -111,7 +114,6 @@ public class DmTest {
         Integer result = null;
 
 
-
         System.out.println(" ------------- 基础设置 ------------- ");
 
         DmBasic dmBasic = new DmBasic(dm);
@@ -129,13 +131,11 @@ public class DmTest {
 //        dmBasic.SetShowErrorMsg(0L);
 
 
-
         System.out.println(" ------------- Foobar ------------- ");
 
 //        DmFoobar dmFoobar = new DmFoobar(dm);
 //        result = dmFoobar.CreateFoobarRect(notepadHandle, 10, 10, 50, 50);
 //        System.out.println("创建自定义窗口句柄：" + result);
-
 
 
         System.out.println(" ------------- 窗口 ------------- ");
@@ -164,13 +164,119 @@ public class DmTest {
 
         Variant.ByrefHolder w = new Variant.ByrefHolder(0);
         Variant.ByrefHolder h = new Variant.ByrefHolder(0);
-        dmWindow.GetClientSize(notepadHandle, w,h);
+        dmWindow.GetClientSize(notepadHandle, w, h);
         System.out.println("窗口 W = " + w.getRef() + "，H = " + h.getRef());
 
         System.out.println("顶层活动窗口句柄：" + dmWindow.GetForegroundFocus());
-        System.out.println("获取给定坐标的窗口句柄：" + dmWindow.GetPointWindow(100,100));
+        System.out.println("获取给定坐标的窗口句柄：" + dmWindow.GetPointWindow(100, 100));
         System.out.println("获取窗口的标题：" + dmWindow.GetWindowTitle(notepadHandle));
-        System.out.println("设置窗口的标题：" + dmWindow.SetWindowText(notepadHandle, "记事本"));
+        // System.out.println("设置窗口的标题：" + dmWindow.SetWindowText(notepadHandle, "记事本"));
+
+
+        System.out.println(" ------------- 后台设置 ------------- ");
+        DmBackground dmBackground = new DmBackground(dm);
+
+        result = dmBackground.BindWindow(notepadHandle, "normal", "windows", "windows", 0);
+        // result = dmBackground.BindWindowEx(notepadHandle, "normal", "normal", "normal", "dx.public.active.api|dx.public.active.message", 0);
+        System.out.println("绑定记事本窗口结果：" + result);
+
+        result = dmBackground.IsBind(notepadHandle);
+        System.out.println("判断是否已绑定：" + result);
+
+
+        dmBackground.UnBindWindow();
+
+
+    }
+
+    @Test
+    public void dmKeyboardMouse() throws Exception {
+
+        // 大漠插件
+        String dmPath = ClassLoader.class.getResource("/lib/dm.dll").getPath();
+        File dmFile = new File(dmPath);
+
+        // 大漠免注册Dll
+        String dmRegPath = ClassLoader.class.getResource("/lib/DmReg.dll").getPath();
+        File dmRegFile = new File(dmRegPath);
+
+        // DmReg.setLibPath(null);
+        DmReg.register(dmRegFile.getPath(), dmFile.getPath());
+        DmReg.close();
+
+        DmSoft dm = DmSoft.getInstance();
+
+        DmWindow dmWindow = new DmWindow(dm);
+
+        Long notepadHandle = dmWindow.FindWindow("", "记事本");
+
+        logger.info("记事本窗口句柄：{}", notepadHandle);
+
+        DmMouse dmMouse = new DmMouse(dm);
+
+        Variant.ByrefHolder x = new Variant.ByrefHolder(0);
+        Variant.ByrefHolder y = new Variant.ByrefHolder(0);
+
+        dmMouse.GetCursorPos(x, y);
+        logger.info("当前鼠标位置：X = {} , Y = {}", x.getRef(), y.getRef());
+
+        String cursorShape = dmMouse.GetCursorShape();
+        logger.info("鼠标特征码：{}", cursorShape);
+
+        String cursorSpot = dmMouse.GetCursorSpot();
+        logger.info("鼠标热点位置：{}", cursorSpot);
+
+        logger.info("鼠标滚轮向上滚：{}", dmMouse.WheelUp());
+
+        // logger.info("鼠标右键点击：{}", dmMouse.RightClick());
+
+        DmKeyboard dmKeyboard = new DmKeyboard(dm);
+
+        logger.info("键盘输入虚拟键码：{}", dmKeyboard.KeyPress(13));
+        logger.info("键盘输入虚拟键码：{}", dmKeyboard.KeyPressChar("enter"));
+        logger.info("键盘输入字符：{}", dmKeyboard.KeyPressStr("Hello Dm", 20));
+
+    }
+
+    @Test
+    public void dmRAM() throws Exception {
+
+        // 大漠插件
+        String dmPath = ClassLoader.class.getResource("/lib/dm.dll").getPath();
+        File dmFile = new File(dmPath);
+
+        // 大漠免注册Dll
+        String dmRegPath = ClassLoader.class.getResource("/lib/DmReg.dll").getPath();
+        File dmRegFile = new File(dmRegPath);
+
+        // DmReg.setLibPath(null);
+        DmReg.register(dmRegFile.getPath(), dmFile.getPath());
+        DmReg.close();
+
+        DmSoft dm = DmSoft.getInstance();
+
+        DmWindow dmWindow = new DmWindow(dm);
+
+        Long notepadHandle = dmWindow.FindWindow("", "记事本");
+
+        logger.info("记事本窗口句柄：{}", notepadHandle);
+
+        DmRam dmRam = new DmRam(dm);
+
+        String doubleToData = dmRam.DoubleToData(1.24);
+        logger.info("双精度的二进制数据：{}", doubleToData);
+
+        String findString = dmRam.FindString(notepadHandle, "00000000-FFFFFFFF", "数据",1);
+        logger.info("查找结果：{}", findString);
+
+        String findStringEx = dmRam.FindStringEx(notepadHandle, "00000000-FFFFFFFF", "数据", 0, 2, 1, 1);
+        logger.info("查找结果：{}", findStringEx);
+
+        String stringToData = dmRam.StringToData("数据", 1);
+        String findData = dmRam.FindData(notepadHandle, "00000000-7fffffff", stringToData);
+        logger.info("查找结果：{}", findData);
+
+
     }
 
 
