@@ -3,7 +3,6 @@ package com.github.imusk.dm.aide.dm;
 import com.github.imusk.dm.aide.core.DmReg;
 import com.github.imusk.dm.aide.core.DmSoft;
 import com.github.imusk.dm.aide.core.function.*;
-import com.github.imusk.dm.aide.utils.ResourcesUtil;
 import org.jawin.DispatchPtr;
 import org.jawin.FuncPtr;
 import org.jawin.ReturnFlags;
@@ -26,9 +25,42 @@ public class DmTest {
 
     private final static Logger logger = LoggerFactory.getLogger(DmTest.class);
 
+    // 贴吧用户_5VS4U32： https://tieba.baidu.com/p/7360743414
+    private final static String regCode = "2048875213110d74d5bdcd436d42c36027a15e866";
+
+    private final static String verInfo = "A6B7C8xxx";
+
+    private final static Boolean free = false;
+
     @Before
-    public void loadDll() {
-        ResourcesUtil.setLibPath();
+    public void loadDM() throws Exception {
+
+        String path = "/lib/dm.dll";
+
+        if (!free) {
+            path = "/lib/dm-7.2107.dll";
+        }
+
+        // 大漠插件
+        String dmPath = ClassLoader.class.getResource(path).getPath();
+        File dmFile = new File(dmPath);
+
+        // 大漠免注册Dll
+        String dmRegPath = ClassLoader.class.getResource("/lib/DmReg.dll").getPath();
+        File dmRegFile = new File(dmRegPath);
+
+        DmReg.setLibPath(null);
+        DmReg.register(dmRegFile.getPath(), dmFile.getPath());
+        DmReg.close();
+
+        DmSoft dm = DmSoft.getInstance();
+
+        logger.info("大漠版本号：{}", dm.Ver());
+
+        if (!free) {
+            logger.info("注册结果：{}", dm.Reg(regCode, verInfo) == 1);
+        }
+
     }
 
     @Test
@@ -266,7 +298,7 @@ public class DmTest {
         String doubleToData = dmRam.DoubleToData(1.24);
         logger.info("双精度的二进制数据：{}", doubleToData);
 
-        String findString = dmRam.FindString(notepadHandle, "00000000-FFFFFFFF", "数据",1);
+        String findString = dmRam.FindString(notepadHandle, "00000000-FFFFFFFF", "数据", 1);
         logger.info("查找结果：{}", findString);
 
         String findStringEx = dmRam.FindStringEx(notepadHandle, "00000000-FFFFFFFF", "数据", 0, 2, 1, 1);
@@ -310,7 +342,74 @@ public class DmTest {
         dmBasic.SetPath("D:\\tmp");
 
         logger.info("Capture = {}", dmPictureColor.Capture(0, 0, 1000, 1000, "DM-Capture.bmp"));
-        logger.info("CaptureGif = {}", dmPictureColor.CaptureGif(0,0,1000,1000,"DM-Capture.gif",100,3000));
+        logger.info("CaptureGif = {}", dmPictureColor.CaptureGif(0, 0, 1000, 1000, "DM-Capture.gif", 100, 3000));
+
+    }
+
+    @Test
+    public void dmSystem() throws Exception {
+
+        // 大漠插件
+        String dmPath = ClassLoader.class.getResource("/lib/dm.dll").getPath();
+        File dmFile = new File(dmPath);
+
+        // 大漠免注册Dll
+        String dmRegPath = ClassLoader.class.getResource("/lib/DmReg.dll").getPath();
+        File dmRegFile = new File(dmRegPath);
+
+        // DmReg.setLibPath(null);
+        DmReg.register(dmRegFile.getPath(), dmFile.getPath());
+        DmReg.close();
+
+        DmSoft dm = DmSoft.getInstance();
+
+        DmWindow dmWindow = new DmWindow(dm);
+
+        Long notepadHandle = dmWindow.FindWindow("", "记事本");
+
+        logger.info("记事本窗口句柄：{}", notepadHandle);
+
+        DmSystem dmSystem = new DmSystem(dm);
+
+        // dmSystem.Beep(1000, 1000);
+
+        // logger.info("是否平滑 = {}", dmSystem.CheckFontSmooth());
+        // logger.info("关闭电源 = {}", dmSystem.DisablePowerSave());
+        logger.info("剪切板 = {}", dmSystem.GetClipboard());
+        dmSystem.SetClipboard("HelloDM");
+        logger.info("剪切板 = {}", dmSystem.GetClipboard());
+        logger.info("当前目录 = {}", dmSystem.GetDir(0));
+        logger.info("硬盘序列号 = {}", dmSystem.GetDiskSerial());
+        logger.info("操作系统的类型 = {}", dmSystem.GetOsType());
+        logger.info("获取当前系统从开机到现在所经历过的时间 = {}", dmSystem.GetTime());
+        logger.info("获取屏幕的宽度 = {}", dmSystem.GetScreenWidth());
+        logger.info("获取屏幕的高度 = {}", dmSystem.GetScreenHeight());
+        logger.info("获取屏幕的色深 = {}", dmSystem.GetScreenDepth());
+        logger.info("64位操作系统 = {}", dmSystem.Is64Bit());
+
+
+    }
+
+
+    @Test
+    public void vip() throws Exception {
+
+        DmSoft dm = DmSoft.getInstance();
+
+        DmWindow dmWindow = new DmWindow(dm);
+
+        DmBackground dmBackground = new DmBackground(dm);
+
+        Long notepadHandle = dmWindow.FindWindow("", "记事本");
+
+        logger.info("记事本窗口句柄：{}", notepadHandle);
+
+        logger.info("绑定窗口结果 = {}", dmBackground.BindWindowEx(notepadHandle,  "normal", "normal", "normal", "dx.public.disable.window.position", 0));
+
+        logger.info("是否已绑定窗口结果 = {}", dmBackground.IsBind(notepadHandle));
+
+        logger.info("解绑窗口结果 = {}", dmBackground.UnBindWindow());
+
 
     }
 
