@@ -30,7 +30,7 @@ public class DmTest {
 
     private final static String verInfo = "A6B7C8xxx";
 
-    private final static Boolean free = false;
+    private final static Boolean free = true;
 
     @Before
     public void loadDM() throws Exception {
@@ -396,20 +396,84 @@ public class DmTest {
 
         DmSoft dm = DmSoft.getInstance();
 
+        DmGuard dmGuard = new DmGuard(dm);
+
         DmWindow dmWindow = new DmWindow(dm);
 
         DmBackground dmBackground = new DmBackground(dm);
+
+        logger.info("开启护盾 = {}", dmGuard.DmGuard(1, "np"));
 
         Long notepadHandle = dmWindow.FindWindow("", "记事本");
 
         logger.info("记事本窗口句柄：{}", notepadHandle);
 
-        logger.info("绑定窗口结果 = {}", dmBackground.BindWindowEx(notepadHandle,  "normal", "normal", "normal", "dx.public.disable.window.position", 0));
+        logger.info("绑定窗口结果 = {}", dmBackground.BindWindowEx(notepadHandle, "normal", "normal", "normal", "dx.public.disable.window.position", 0));
 
         logger.info("是否已绑定窗口结果 = {}", dmBackground.IsBind(notepadHandle));
 
         logger.info("解绑窗口结果 = {}", dmBackground.UnBindWindow());
 
+        DmWindowPlus dmWindowPlus = new DmWindowPlus(dm);
+        logger.info("查找指定进程 = {}", dmWindowPlus.EnumProcess("qq.exe"));
+
+
+    }
+
+
+    @Test
+    public void cocFindStr() throws Exception {
+
+        DmSoft dm = DmSoft.getInstance();
+
+        DmBasic dmBasic = new DmBasic(dm);
+
+        DmSystem dmSystem = new DmSystem(dm);
+
+        DmOcr dmOcr = new DmOcr(dm);
+
+        DmWindow dmWindow = new DmWindow(dm);
+
+        DmBackground dmBackground = new DmBackground(dm);
+
+        DmPictureColor dmPictureColor = new DmPictureColor(dm);
+
+        String basePath = dmBasic.GetBasePath();
+        logger.info("BasePath：{}", basePath);
+
+        String cocPath = basePath.replace("\\lib\\", "\\coc\\");
+        Integer setPathResult = dmBasic.SetPath(cocPath);
+        logger.info("SetPath：{}", setPathResult);
+
+        String cocFontPath = cocPath + "\\font\\coc-font.txt";
+        Integer setDictResult = dmOcr.SetDict(0, cocFontPath);
+        logger.info("设置字库：{}", setDictResult);
+
+        Long picHandle = dmWindow.FindWindow("HoneyviewClassX", "");
+        logger.info("照片窗口句柄：{}", picHandle);
+
+        Integer bindResult = dmBackground.BindWindow(picHandle, "gdi", "normal", "normal", 0);
+        logger.info("绑定窗口：{}", bindResult);
+
+        Variant.ByrefHolder width = new Variant.ByrefHolder(0);
+        Variant.ByrefHolder height = new Variant.ByrefHolder(0);
+        Integer clientSizeResult = dmWindow.GetClientSize(picHandle, width, height);
+        logger.info("获取窗口宽高：{}, {}", width.getRef(), height.getRef());
+
+        Variant.ByrefHolder intX = new Variant.ByrefHolder(0);
+        Variant.ByrefHolder intY = new Variant.ByrefHolder(0);
+        Integer findStrResult = dmOcr.FindStr(0, 0, Integer.parseInt(width.getRef().toString()), Integer.parseInt(height.getRef().toString()), "3", "D7D8D7-282728", 0.8, intX, intY);
+        logger.info("查找文字[{}]结果：{}", "1", findStrResult);
+        logger.info("文字[{}]的坐标位置：{}, {}", "1", intX.getRef(), intY.getRef());
+
+        Integer findPicResult = dmPictureColor.FindPic(0, 0, Integer.parseInt(width.getRef().toString()), Integer.parseInt(height.getRef().toString()), "bmp\\attack.bmp", "", 0.95, 3, intX, intY);
+        logger.info("找图结果：{}, 位置：{}, {}", findPicResult, intX.getRef(), intY.getRef());
+
+        Integer captureResult = dmPictureColor.Capture(Integer.parseInt(intX.getRef().toString()) - 5, Integer.parseInt(intY.getRef().toString()) - 5, Integer.parseInt(intX.getRef().toString()) + 15, Integer.parseInt(intY.getRef().toString()) + 20, "capture.bmp");
+        logger.info("截图：{}", captureResult);
+
+        Integer unBindResult = dmBackground.UnBindWindow();
+        logger.info("解绑窗口：{}", unBindResult);
 
     }
 
